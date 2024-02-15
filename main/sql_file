@@ -1,0 +1,52 @@
+SELECT a.c_personid,
+       a.c_name_chn AS person_name,
+       a.c_birthyear AS birth_year,
+       b.c_addr_id,
+       b.c_addr_type,
+       d.c_addr_desc,
+       d.c_addr_desc_chn,
+       c.c_name_chn AS addr_name,
+       c.x_coord,
+       c.y_coord,
+       e.c_year AS entry_year,
+       e.c_age AS entry_age,
+       f.c_entry_desc_chn AS entry_desc,
+       g.c_nianhao_chn AS entry_nianhao,
+       g.c_dynasty_chn AS entry_dynasty
+FROM BIOG_MAIN AS a
+LEFT JOIN BIOG_ADDR_DATA AS b -- 地理信息
+ON a.c_personid = b.c_personid
+LEFT JOIN ADDRESSES AS c -- 地址归类
+ON b.c_addr_id = c.c_addr_id
+LEFT JOIN BIOG_ADDR_CODES AS d -- 地址名称
+ON b.c_addr_type = d.c_addr_type
+JOIN ENTRY_DATA AS e -- 入仕途径
+ON a.c_personid = e.c_personid
+LEFT JOIN ENTRY_CODES AS f -- 入仕途径编码
+ON e.c_entry_code = f.c_entry_code
+LEFT JOIN NIAN_HAO AS g -- 年号id和朝代
+ON e.c_nianhao_id = g.c_nianhao_id
+WHERE a.c_birthyear BETWEEN -211 AND 1911
+  AND b.c_addr_type IN (1,
+                        5,
+                        6,
+                        7,
+                        8)
+  AND e.c_entry_code = 36 -- '科舉: 進士(籠統)'
+
+GROUP BY a.c_personid,
+         a.c_name_chn,
+         a.c_birthyear,
+         b.c_addr_id,
+         b.c_addr_type,
+         d.c_addr_desc,
+         d.c_addr_desc_chn,
+         c.c_name_chn,
+         c.x_coord,
+         c.y_coord,
+         e.c_year,
+         e.c_age,
+         f.c_entry_desc_chn,
+         g.c_nianhao_chn,
+         g.c_dynasty_chn
+         
